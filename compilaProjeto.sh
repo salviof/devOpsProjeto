@@ -14,10 +14,5 @@ source $ARQUIVO_TRABALHO_USUARIO
 source $/home/superBits/superBitsDevOps/VARIAVEIS/SB_VARIAVEIS_MAVEN_GIT.sh $DIRETORIO_PROJETO
 ###############################################################################################################
 cd $DIRETORIO_PROJETO
-echo "executando init dos submodulos (caso ainda não tenha sido excutados")
-git submodule update --init --recursive
-echo "Baixando versão atualizada com pull orign master"
-git submodule foreach git pull origin master
-echo "Executando push dos submodulos"
-git submodule push --recursive
 
+mvn install
