@@ -9,15 +9,15 @@ Se você for um especialista nestas tecnologias, sabemos que este projeto ainda 
 participe em http://salviof.github.io/SuperBits_FrameWork/
 
 Os comando disponiveis são os comandos abaixo, sendo que Submodulos refere-se aos possíveis submodulos adicionados no diretorio git (ex: os resources e webInf do projeto costumam ser submodulos) o projeto atual está incluido automaticamente em todos, ou seja, quando voce compila Framework ele vai compilar o framework e o projeto.
-"xxxxTudo.sh" significa: model frameworks e submodulos
+"xxxxTudo.sh" significa: model framework e submodulos
 já "xxxtodosProjetos.sh" significa as pastas: model_regras,webApp,android,ic,ws
 
 implantarHomologacçãoWeb.sh executa o  compilaTudo.sh, executa o TestesConformidade do model do webApp, e sobe a versão homologada para o servidor
 
-./baixarAtualizacao.sh (atualiza o projeto atual)
-./baixarAtualizacaoFramwork.sh (atualiza o FrameWork e o Projeto Atual)
-./baixarAtualizacaoModel.sh (Atualiza o Model e o Projeto Atual)
-./baixarAtualizacaoSubModulos.sh (Atualiza o Model e o Projeto Atual)
+./baixarProjeto.sh (atualiza o projeto atual)
+./baixarFramwork.sh (atualiza o FrameWork e o Projeto Atual)
+./baixarModel.sh (Atualiza o Model e o Projeto Atual)
+./baixarSubModulos.sh (Atualiza o Model e o Projeto Atual)
 ./baixarTudo.sh
 ./baixarTodosProjetos.sh
 
