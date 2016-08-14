@@ -1,7 +1,7 @@
-echo "executando init dos submodulos (caso ainda não tenha sido excutados")
-git submodule update --init --recursive
-echo "Baixando versão atualizada com pull orign master"
-git submodule foreach git pull origin master
-echo "Executando push dos submodulos"
-git submodule push --recursive
+echo "executando init dos submodulos (caso ainda não tenha sido excutados)"
+git checkout master  && git pull --ff origin master
+git submodule sync
+git submodule init
+git submodule update
+git submodule foreach "(git checkout master && git pull --ff origin master && git push origin master) || true"
 

@@ -25,7 +25,7 @@ implantarHomologacçãoWeb.sh executa o  compilaTudo.sh, executa o TestesConform
 ./compilaModel.sh
 ./compilaFrameWork.sh
 ./compilaTudo.sh
-./compilaTodosProjetos.sh
+./compilaw.sh
 
 ./sincronizar.sh
 ./sincronizarModel.sh
