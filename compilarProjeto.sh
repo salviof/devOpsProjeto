@@ -2,7 +2,7 @@
 ##############################################################################################################
 ARGUMENTOS_ESPERADOS=1
 # Verificando se o o Cliente e o Projeto foram enviados
-if [ $# -ne $ARGUMENTOS_ESPERADOS ]
+if [ $# -ne $ARGUMENTOS_ESPERADOS 
 then
   echo "O script precisa saber o diretorio do projeto $0 ;) "
 echo "Este script utiliza caminho relativo a base do projeto, você precisa chama-lo atravez da base.. $0 ;) "
