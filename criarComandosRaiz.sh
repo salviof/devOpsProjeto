@@ -7,5 +7,5 @@ echo "Este script utiliza caminho relativo a base do projeto, você precisa cham
   exit $E_BADARGS
 fi
 
-cp /home/superBits/superBitsDevOps/devOpsProjeto/comandosRaizProjeto/* $1 -r -f 
+cp -rf /home/superBits/superBitsDevOps/devOpsProjeto/comandosRaizProjeto/* $1 
 

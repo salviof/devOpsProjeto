@@ -9,10 +9,16 @@ then
   echo "Especifique o diretorio de chamada e o nome do Script $0 ;) "
   exit $E_BADARGS
 fi
-
+#Carregando variaveis de ambiente
 source /home/superBits/superBitsDevOps/VARIAVEIS/SB_VARIAVEIS_MAVEN_GIT.sh $diretorioChamada $nomeScript
-for proj in "${CAMINHOS_EXECUCAO[@]}"
-do
+case "$nomeScript" in
+ pubicar*) 
+  	source /home/superBits/superBitsDevOps/devOpsProjeto/$pScript $CAMINHO_MODEL_TARGET $CAMINHO_WEBAPP_TARGET
+ ;;
+ *) echo "default"
+
+  for proj in "${CAMINHOS_EXECUCAO[@]}"
+  do
   echo "Executando $SCRIPT_COM_ACOES comandos em $proj "  
   cd $proj	
 	for pScript in "${SCRIPTS_COM_ACOES[@]}"
@@ -20,5 +26,15 @@ do
 	 echo "executando $pScript"
  	 source /home/superBits/superBitsDevOps/devOpsProjeto/$pScript
 	done
-done
+  done
+
+
+ ;;	
+esac
+
+
+
 echo "Comando executado com sucesso"
+
+
+
