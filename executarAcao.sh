@@ -3,7 +3,7 @@ ARGUMENTOS_ESPERADOS=2
 diretorioChamada=$1
 nomeScript=$2
 # Verificando se o o Cliente e o Projeto foram enviados
-
+echo "Executando $nomeScript em $diretorioChamada"
 if [ $# -ne $ARGUMENTOS_ESPERADOS ]
 then
   echo "Especifique o diretorio de chamada e o nome do Script $0 ;) "
@@ -11,11 +11,14 @@ then
 fi
 #Carregando variaveis de ambiente
 source /home/superBits/superBitsDevOps/VARIAVEIS/SB_VARIAVEIS_MAVEN_GIT.sh $diretorioChamada $nomeScript
+
+# executa comandos de acordo com o script
 case "$nomeScript" in
- pubicar*) 
-  	source /home/superBits/superBitsDevOps/devOpsProjeto/$pScript $CAMINHO_MODEL_TARGET $CAMINHO_WEBAPP_TARGET
+ publicar*)	
+  	source /home/superBits/superBitsDevOps/devOpsProjeto/$nomeScript   $diretorioChamada $nomeScript
  ;;
- *) echo "default"
+ *) 
+echo "default"
 
   for proj in "${CAMINHOS_EXECUCAO[@]}"
   do
