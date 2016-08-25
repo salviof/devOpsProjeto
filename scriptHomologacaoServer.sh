@@ -1,4 +1,6 @@
 
+
+#Para cada pasta do servidor de git, projetos 
 while read linha
 do
     projetos[ $idx ]="$linha"        
@@ -8,15 +10,17 @@ cd /home
 for proj in "${projetos[@]}"
 do
    :
-
+# Faz um Git clone do repositorio na pasta publicados
 mkdir ~/publicados/ -p
 cd ~/publicados
 git clone ~/projetos/$proj
 cd ~/projetos/$proj
 git pull orign master
+
+#Lê as informacoes do cliente (contendo o endereço do site que será homologado)
 source ~/publicados/$proj/cliente.info
 
-	
+# Adiciona o contecto no Jetty	
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?> "> ~/servidor/jetty9/webapps/$proj.xml
 echo " <Configure class=\"org.eclipse.jetty.webapp.WebAppContext\"> " >>  ~/servidor/jetty9/webapps/$proj.xml
 echo "   <Set name=\"contextPath\">/</Set> " >>  ~/servidor/jetty9/webapps/$proj.xml
@@ -31,7 +35,7 @@ echo " </Configure> " >>  ~/servidor/jetty9/webapps/$proj.xml
    echo $arq
 done
 
-
+# Dropa o banco superCompras (comando temporario)
 mysqladmin processlist -u root superCompras | \
 awk '$2 ~ /^[0-9]/ {print "KILL "$2";"}' | \
 mysql -u root 
