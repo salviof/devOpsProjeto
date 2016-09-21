@@ -106,5 +106,6 @@ cd  $CAMINHO_RELEASE/$NOME_PROJETO
 git add --all 
 git commit -m "Atualizavao versao $(date '+%d/%m/%Y %H:%M:%S')"
 git push
-ssh git@homologacao.superkompras.com.br 'bash -s' < /home/superBits/superBitsDevOps/devOpsProjeto/scriptHomologacaoServer.sh
+ssh git@homologacao.superkompras.com.br 'bash -s' < /home/superBits/superBitsDevOps/SCRIPTS_SERVIDOR/atualizarProjetos.sh
+
 
