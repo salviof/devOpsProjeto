@@ -12,6 +12,7 @@ do :
 # Faz um Git clone do repositorio na pasta publicados
 mkdir ~/publicados/ -p
 cd ~/publicados
+
 git clone ~/projetos/$proj
 cd ~/projetos/$proj
 git pull orign master
@@ -36,6 +37,8 @@ echo "       <Item>$SERVIDOR_HOMOLOGACAO</Item>  " >>  ~/servidor/jetty9/webapps
 echo "     </Array>  " >>  ~/servidor/jetty9/webapps/$proj.xml
 echo "   </Set> " >>  ~/servidor/jetty9/webapps/$proj.xml
 echo " </Configure> " >>  ~/servidor/jetty9/webapps/$proj.xml
+
+
 
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?> "> ~/servidor/jetty9/webapps/$arqProjRequisito
 echo " <Configure class=\"org.eclipse.jetty.webapp.WebAppContext\"> " >>  ~/servidor/jetty9/webapps/$arqProjRequisito

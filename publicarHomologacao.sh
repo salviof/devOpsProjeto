@@ -1,3 +1,4 @@
+#!/bin/bash
 ARGUMENTOS_ESPERADOS=2
 diretorioChamada=$1
 nomeScript=$2
@@ -22,9 +23,7 @@ CAMINHO_MODEL_TARGET=$CAMINHO_MODEL_PROJETO/target
 CAMINHO_WEBAPP_REQUISITO_PROJETO_TARGET=$CAMINHO_WEBAPP_REQUISITO_PROJETO/target
 
 
-
-
-echo "compilando $CAMINHO_CLIENTE_SOURCE=
+echo "compilando $CAMINHO_CLIENTE_SOURCE"
 cd $CAMINHO_MODEL_PROJETO
 source /home/superBits/superBitsDevOps/devOpsProjeto/compilar.sh
 cd $CAMINHO_WEBAPP_PROJETO
@@ -32,13 +31,13 @@ source /home/superBits/superBitsDevOps/devOpsProjeto/compilar.sh
 cd $CAMINHO_WEBAPP_REQUISITO_PROJETO
 source /home/superBits/superBitsDevOps/devOpsProjeto/compilar.sh
 
+
 listagemWebApp=$CAMINHO_WEBAPP_TARGET/*.war
 listagemWebAppRequisito=$CAMINHO_WEBAPP_REQUISITO_PROJETO_TARGET/*.war
 
 
 if ! ls $listagemWebApp >/dev/null
-        then
- echo "O arquivo war não foi encontrado em $listagemWebApp ;) "
+        then echo "O arquivo war não foi encontrado em $listagemWebApp  "
   exit $E_BADARGS
 fi
 
@@ -46,14 +45,14 @@ fi
 
 if ! ls $listagemWebAppRequisito >/dev/null
         then
- echo "O arquivo war não foi encontrado em $listagemWebApp ;) "
+ echo "O arquivo war não foi encontrado em $listagemWebApp  "
   exit $E_BADARGS
 fi
 
 listagemModel=$CAMINHO_MODEL_TARGET/*.jar
 if ! ls $listagemModel >/dev/null
         then
-  echo "o arquivo model não foi encontrado $listagemModel ;) "
+  echo "o arquivo model não foi encontrado $listagemModel  "
   exit $E_BADARGS
 fi
 
@@ -96,13 +95,18 @@ ARQUIVO_MODEL=${modelfile[0]}
 #COPIANDO PARA PASTA DE IMPLANTAÇÃO
 echo "copiando de $CAMINHO_WEBAPP_TARGET/$ARQUIVO_WEBAAP"
 echo "para $CAMINHO_RELEASE/$NOME_PROJETO/$NOME_PROJETO.war"
+
 cp $CAMINHO_WEBAPP_TARGET/$ARQUIVO_WEBAAP $CAMINHO_RELEASE/$NOME_PROJETO/$NOME_PROJETO.war -f
-cp $CAMINHO_WEBAPP_REQUISITO_PROJETO_TARGET/$ARQUIVO_WEBAAP_REQUISITO $CAMINHO_RELEASE/$NOME_PROJETO/$NOME_PROJETO_REQUISITO.req.war -f
+
+echo "copiando de $CAMINHO_WEBAPP_REQUISITO_PROJETO_TARGET/$ARQUIVO_WEBAAP_REQUISITO"
+echo "para $CAMINHO_RELEASE/$NOME_PROJETO/$NOME_PROJETO.req.war"
+cp $CAMINHO_WEBAPP_REQUISITO_PROJETO_TARGET/$ARQUIVO_WEBAAP_REQUISITO $CAMINHO_RELEASE/$NOME_PROJETO/$NOME_PROJETO.req.war -f
 
 cp $CAMINHO_MODEL_TARGET/$ARQUIVO_MODEL  $CAMINHO_RELEASE/$NOME_PROJETO/$NOME_PROJETO.jar -f
 cp $CAMINHO_CLIENTE_RELEASE/cliente.info  $CAMINHO_RELEASE/$NOME_PROJETO
 
-cd  $CAMINHO_RELEASE/$NOME_PROJETO
+cd $CAMINHO_RELEASE/$NOME_PROJETO
+git pull
 git add --all 
 git commit -m "Atualizavao versao $(date '+%d/%m/%Y %H:%M:%S')"
 git push
