@@ -10,9 +10,6 @@ then
   exit $E_BADARGS
 fi
 
-
-
-
 #Carregando variaveis de ambiente
 source /home/superBits/superBitsDevOps/VARIAVEIS/SB_VARIAVEIS_MAVEN_GIT.sh $diretorioChamada $nomeScript
 frase_chave="QUERO APAGAR TUDO"
@@ -66,12 +63,9 @@ source /home/superBits/superBitsDevOps/devOpsProjeto/compilar.sh
 
 
 listagemWebApp=$CAMINHO_WEBAPP_TARGET/*.war
-<<<<<<< HEAD
-=======
 listagemWebAppRequisito=$CAMINHO_WEBAPP_REQUISITO_PROJETO_TARGET/*.war
 
 
->>>>>>> b04cfada7c7a35437811b806388b62638749de28
 if ! ls $listagemWebApp >/dev/null
         then echo "O arquivo war não foi encontrado em $listagemWebApp  "
   exit $E_BADARGS
@@ -170,5 +164,4 @@ if [[ $respostaUsuario == *"$frase_chave"* ]]
 then 
 ssh git@homologacao.superkompras.com.br 'bash -s' < /home/superBits/superBitsDevOps/SCRIPTS_SERVIDOR/criarBancoDeDados.sh $NOME_PROJETO
 fi 
-
 
