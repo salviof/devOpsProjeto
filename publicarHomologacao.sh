@@ -26,8 +26,6 @@ source /home/superBits/superBitsDevOps/devOpsProjeto/compilar.sh
 
 
 listagemWebApp=$CAMINHO_WEBAPP_TARGET/*.war
-
-
 if ! ls $listagemWebApp >/dev/null
         then
  echo "O arquivo war não foi encontrado em $listagemWebApp ;) "
