@@ -11,8 +11,41 @@ then
 fi
 
 
+
+
 #Carregando variaveis de ambiente
 source /home/superBits/superBitsDevOps/VARIAVEIS/SB_VARIAVEIS_MAVEN_GIT.sh $diretorioChamada $nomeScript
+frase_chave="QUERO APAGAR TUDO"
+echo "
+
+***************************ATENÇÃO*********************************************
+
+Este script irá atualizar o projeto $NOME_PROJETO WebApp e os Requisitos 
+
+Você pode:
+pressionar ctr+c para cancelar
+entar para subir
+ou digitar $frase_chave para apagar tudo e instalar uma versão nova do banco de dados"
+read respostaUsuario
+
+
+if [[ $respostaUsuario == *"$frase_chave"* ]]
+then 
+echo "
+***************************ATENÇÃO - ULTIMO ALERTA ********************************
+
+O BANCO DE DADOS DO SERVIDOR REMOTO SERÁ DESTRUIDO SEM BACKUP, 
+em seguida o sistema vai subir o banco no estado inciial.
+
+Para cancelar ctr+C
+
+***************************PERIGO !*********************************************
+
+"
+fi 
+read 
+
+
 
 CAMINHO_WEBAPP_PROJETO=$CAMINHO_CLIENTE_SOURCE/$NOME_PROJETO/webApp
 CAMINHO_WEBAPP_REQUISITO_PROJETO=$CAMINHO_CLIENTE_SOURCE/$NOME_PROJETO/webAppRequisitos
@@ -94,8 +127,18 @@ ARQUIVO_MODEL=${modelfile[0]}
 
 echo "copiando arquivos de banco de dados"
 cp $CAMINHO_SOURCE_PROJETO/bancoHomologacao.sql $CAMINHO_RELEASE/$NOME_PROJETO/ -f
-cp  $CAMINHO_SOURCE_PROJETO/SBProjeto.prop  $CAMINHO_RELEASE/$NOME_PROJETO/ -f
 
+
+
+
+  
+if [ ! -f "$CAMINHO_SOURCE_PROJETO/SBProjeto.prop" ]
+then
+  echo "O Arquivo SBProjeto.prop não foi encontrada na pasta raiz do projeto, execute um teste do projeto WebApp para que o arquivo seja criado automaticamente.  "
+  exit $E_BADARGS
+fi
+
+cp  $CAMINHO_SOURCE_PROJETO/SBProjeto.prop  $CAMINHO_RELEASE/$NOME_PROJETO/ -f
 
 #COPIANDO PARA PASTA DE IMPLANTAÇÃO
 echo "copiando de $CAMINHO_WEBAPP_TARGET/$ARQUIVO_WEBAAP"
@@ -115,6 +158,14 @@ git pull
 git add --all 
 git commit -m "Atualizavao versao $(date '+%d/%m/%Y %H:%M:%S')"
 git push
-ssh git@homologacao.superkompras.com.br 'bash -s' < /home/superBits/superBitsDevOps/SCRIPTS_SERVIDOR/atualizarProjetos.sh
+
+echo "Operações locais realizadas com sucesso, enviando projeto: $NOME_PROJETO"
+
+ssh git@homologacao.superkompras.com.br 'bash -s' < /home/superBits/superBitsDevOps/SCRIPTS_SERVIDOR/atualizarProjeto.sh $NOME_PROJETO
+
+if [[ $respostaUsuario == *"$frase_chave"* ]]
+then 
+ssh git@homologacao.superkompras.com.br 'bash -s' < /home/superBits/superBitsDevOps/SCRIPTS_SERVIDOR/criarBancoDeDados.sh $NOME_PROJETO
+fi 
 
 
