@@ -122,12 +122,20 @@ do
 done < <(ls *.jar )
 ARQUIVO_MODEL=${modelfile[0]}
 
+
+cp  $CAMINHO_SOURCE_PROJETO/req_SBProjeto.prop  $CAMINHO_RELEASE/$NOME_PROJETO/ -f
+
+if [ ! -f "$CAMINHO_SOURCE_PROJETO/req_SBProjeto.prop" ]
+then
+  echo "O Arquivo req_SBProjeto.prop não foi encontrada na pasta raiz do projeto, execute um teste do projeto WebApp para que o arquivo seja criado automaticamente.  "
+  exit $E_BADARGS
+fi
+
 echo "copiando arquivos de banco de dados"
-cp $CAMINHO_SOURCE_PROJETO/bancoHomologacao.sql $CAMINHO_RELEASE/$NOME_PROJETO/ -f
+cp $CAMINHO_SOURCE_PROJETO/$NOME_BANCO.Homologacao.sql $CAMINHO_RELEASE/$NOME_PROJETO/ -f
 
 
-
-
+cp  $CAMINHO_SOURCE_PROJETO/SBProjeto.prop  $CAMINHO_RELEASE/$NOME_PROJETO/ -f
   
 if [ ! -f "$CAMINHO_SOURCE_PROJETO/SBProjeto.prop" ]
 then
@@ -135,7 +143,8 @@ then
   exit $E_BADARGS
 fi
 
-cp  $CAMINHO_SOURCE_PROJETO/SBProjeto.prop  $CAMINHO_RELEASE/$NOME_PROJETO/ -f
+echo "copiando arquivos de banco de dados"
+cp $CAMINHO_SOURCE_PROJETO/$NOME_BANCO.Homologacao.sql $CAMINHO_RELEASE/$NOME_PROJETO/ -f
 
 #COPIANDO PARA PASTA DE IMPLANTAÇÃO
 echo "copiando de $CAMINHO_WEBAPP_TARGET/$ARQUIVO_WEBAAP"
