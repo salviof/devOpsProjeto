@@ -255,18 +255,11 @@ git push origin master
 
 alerta "Operações locais realizadas com sucesso, executando atualizações no servidor $NOME_PROJETO"
 
-<<<<<<< HEAD
-ssh git@superkompras.com.br 'bash -s' < /home/superBits/superBitsDevOps/SCRIPTS_SERVIDOR/atualizarProjeto.sh $NOME_PROJETO
-
-if [[ $respostaUsuario == *"$frase_chave"* ]]
-then 
-ssh git@superkompras.com.br 'bash -s' < /home/superBits/superBitsDevOps/SCRIPTS_SERVIDOR/criarBancoDeDados.sh $NOME_PROJETO
-=======
 ssh git@marketingparaweb.com.br 'bash -s' < /home/superBits/superBitsDevOps/SCRIPTS_SERVIDOR/atualizarProjeto.sh $NOME_PROJETO $respAtualizarRequisito
 
 if [[ $respostaUsuario == *"$frase_chave"* ]]
 then 
 ssh git@marketingparaweb.com.br 'bash -s' < /home/superBits/superBitsDevOps/SCRIPTS_SERVIDOR/criarBancoDeDados.sh $NOME_PROJETO
->>>>>>> 4c3dda46ad9e2cff2a24d35a2ac1074d4b462f03
+
 fi 
 
