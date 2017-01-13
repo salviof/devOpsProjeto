@@ -23,8 +23,38 @@ then
   exit $E_BADARGS
 fi
 
-#Carregando variaveis de ambiente
+alerta "Carregando variaveis de ambiente"
 source /home/superBits/superBitsDevOps/VARIAVEIS/SB_VARIAVEIS_MAVEN_GIT.sh $diretorioChamada $nomeScript
+source $CAMINHO_RELEASE/cliente.info
+
+alerta "Verificando estrutura de diretorios"
+CAMINHO_PASTA_CONFIG_GIT=$CAMINHO_RELEASE/$NOME_PROJETO/.git
+if [ ! -d "$CAMINHO_PASTA_CONFIG_GIT" ]; then
+  # PASTA DO CLIENTE NÃO EXISTE
+echo "---"
+alerta "A pasta do repositório reliase não contem o subdiretorio .git ou não existe"
+alerta  "digite    -->SIM--< se deseja EXLUIR a pasta: [$CAMINHO_RELEASE/$NOME_PROJETO/]"
+alerta "E CLONARr novamente via: $SERVIDOR_GIT_RELEASE"
+read respostaUsuario
+
+
+if [[ $respostaUsuario == "SIM" ]]
+then
+cd $CAMINHO_RELEASE
+git clone $SERVIDOR_GIT_RELEASE
+else
+ alerta "Impossível subir sem um diretorio vinculado a um repositório git"
+ exit $E_BADARGS
+fi
+
+
+
+fi
+
+
+
+
+
 frase_chave="QUERO APAGAR TUDO"
 alerta "
 
@@ -133,7 +163,6 @@ fi
 
 
 
-
 alerta "Listando e armazenando nomes de arquivos do projeto encontrado"
 cd $CAMINHO_WEBAPP_TARGET
 i=0
@@ -176,32 +205,32 @@ alerta "Encontrado arquivo: $ARQUIVO_MODEL"
 #alerta "Preparando repositorio para envio em $CAMINHO_RELEASE/$NOME_PROJETO"
 #cd $CAMINHO_RELEASE/$NOME_PROJETO
 
-<<<<<<< HEAD
+# TODO EM VARIAVEIS GIT ALTERAR NOM_PROJETO PARA NOME GRUPO PROJETO
+NOME_GRUPO_PROJETO=$NOME_PROJETO
+if $ATUALIZAR_REQUISITO ; then
 
-cp  $CAMINHO_SOURCE_PROJETO/req_SBProjeto.prop  $CAMINHO_RELEASE/$NOME_PROJETO/ -f
+alerta "Lendo $CAMINHO_SOURCE_PROJETO/req_SBProjeto.prop (Para cópia de script de homologacao) "
 
 if [ ! -f "$CAMINHO_SOURCE_PROJETO/req_SBProjeto.prop" ]
 then
   echo "O Arquivo req_SBProjeto.prop não foi encontrada na pasta raiz do projeto, execute um teste do projeto WebApp para que o arquivo seja criado automaticamente.  "
   exit $E_BADARGS
 fi
-=======
+alerta  "importando variaveis do projeto Requisitos"
+source $CAMINHO_SOURCE_PROJETO/req_SBProjeto.prop
+cp  $CAMINHO_SOURCE_PROJETO/req_SBProjeto.prop  $CAMINHO_RELEASE/$NOME_PROJETO/ -f
+alerta  "copiando arquivos de banco de dados do requisito"
+cp $CAMINHO_SOURCE_PROJETO/$NOME_BANCO.Homologacao.sql $CAMINHO_RELEASE/$NOME_PROJETO/ -f
+fi
+
 #git checkout -f
 #git checkout --theirs -- .
 #git checkout -f
 
 #git pull origin master 
 
-alerta "copiando arquivos de banco de dados"
-alerta "de $CAMINHO_SOURCE_PROJETO/bancoHomologacao.sql para $CAMINHO_RELEASE/$NOME_PROJETO/ "
-cp $CAMINHO_SOURCE_PROJETO/bancoHomologacao.sql $CAMINHO_RELEASE/$NOME_PROJETO/ -f
->>>>>>> 4c3dda46ad9e2cff2a24d35a2ac1074d4b462f03
-
-echo "copiando arquivos de banco de dados"
-cp $CAMINHO_SOURCE_PROJETO/$NOME_BANCO.Homologacao.sql $CAMINHO_RELEASE/$NOME_PROJETO/ -f
 
 
-cp  $CAMINHO_SOURCE_PROJETO/SBProjeto.prop  $CAMINHO_RELEASE/$NOME_PROJETO/ -f
   
 if [ ! -f "$CAMINHO_SOURCE_PROJETO/SBProjeto.prop" ]
 then
@@ -209,38 +238,48 @@ then
   exit $E_BADARGS
 fi
 
-echo "copiando arquivos de banco de dados"
-cp $CAMINHO_SOURCE_PROJETO/$NOME_BANCO.Homologacao.sql $CAMINHO_RELEASE/$NOME_PROJETO/ -f
+alerta  "importando variaveis do projeto em $CAMINHO_SOURCE_PROJETO/SBProjeto.prop"
+source $CAMINHO_SOURCE_PROJETO/SBProjeto.prop
+alerta "Copiando arquivo de variaveis do projeot para repositorio"
+cp  $CAMINHO_SOURCE_PROJETO/SBProjeto.prop  $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/ -f
+
+alerta "copiando arquivos de banco de dados"
+cp $CAMINHO_SOURCE_PROJETO/$NOME_BANCO.Homologacao.sql $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/ -f
 
 #COPIANDO PARA PASTA DE IMPLANTAÇÃO
 alerta "copiando war WebApp "
 alerta " de: $CAMINHO_WEBAPP_TARGET/$ARQUIVO_WEBAAP"
-alerta "para $CAMINHO_RELEASE/$NOME_PROJETO/$NOME_PROJETO.war"
+alerta "para $CAMINHO_RELEASE/$NOME_PROJETO/$NOME_GRUPO_PROJETO.war"
 
-cp $CAMINHO_WEBAPP_TARGET/$ARQUIVO_WEBAAP $CAMINHO_RELEASE/$NOME_PROJETO/$NOME_PROJETO.war -f
+cp $CAMINHO_WEBAPP_TARGET/$ARQUIVO_WEBAAP $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/$NOME_GRUPO_PROJETO.war -f
 
 alerta "copiando jar model "
 alerta " de  $CAMINHO_MODEL_TARGET/$ARQUIVO_MODEL "
-alerta "para $CAMINHO_RELEASE/$NOME_PROJETO/$NOME_PROJETO.war"
+alerta "para $CAMINHO_RELEASE/$NOME_PROJETO/$NOME_GRUPO_PROJETO.war"
 
-cp $CAMINHO_MODEL_TARGET/$ARQUIVO_MODEL  $CAMINHO_RELEASE/$NOME_PROJETO/$NOME_PROJETO.jar -f
+cp $CAMINHO_MODEL_TARGET/$ARQUIVO_MODEL  $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/$NOME_GRUPO_PROJETO.jar -f
 
 
-alerta "copiando informações do cliente"
+alerta "copiando informações do cliente para repositório"
 alerta "de   $CAMINHO_CLIENTE_RELEASE/cliente.info"
-alerta "para $CAMINHO_RELEASE/$NOME_PROJETO"
+alerta "para $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO"
 
-cp $CAMINHO_CLIENTE_RELEASE/cliente.info  $CAMINHO_RELEASE/$NOME_PROJETO
+cp $CAMINHO_CLIENTE_RELEASE/cliente.info  $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO
 
 if $ATUALIZAR_REQUISITO ; then
 alerta "copiando de "
 alerta " de: $CAMINHO_WEBAPP_REQUISITO_PROJETO_TARGET/$ARQUIVO_WEBAAP_REQUISITO"
-alerta "para $CAMINHO_RELEASE/$NOME_PROJETO/$NOME_PROJETO.req.war"
-cp $CAMINHO_WEBAPP_REQUISITO_PROJETO_TARGET/$ARQUIVO_WEBAAP_REQUISITO $CAMINHO_RELEASE/$NOME_PROJETO/$NOME_PROJETO.req.war -f
+alerta "para $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/$NOME_GRUPO_PROJETO.req.war"
+cp $CAMINHO_WEBAPP_REQUISITO_PROJETO_TARGET/$ARQUIVO_WEBAAP_REQUISITO $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/$NOME_GRUPO_PROJETO.req.war -f
 fi
 
-alerta "preparando para enviar o repositório para o servidor em $CAMINHO_RELEASE/$NOME_PROJETO"
-cd $CAMINHO_RELEASE/$NOME_PROJETO
+alerta "preparando para enviar o repositório para o servidor em $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO"
+
+
+
+
+
+cd $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO
 
 
 
@@ -253,20 +292,13 @@ git push origin master -f
 alerta "git push origin master"
 git push origin master 
 
-alerta "Operações locais realizadas com sucesso, executando atualizações no servidor $NOME_PROJETO"
+alerta "Operações locais realizadas com sucesso, executando atualizações no servidor $NOME_GRUPO_PROJETO"
 
-<<<<<<< HEAD
-ssh git@superkompras.com.br 'bash -s' < /home/superBits/superBitsDevOps/SCRIPTS_SERVIDOR/atualizarProjeto.sh $NOME_PROJETO
 
-if [[ $respostaUsuario == *"$frase_chave"* ]]
-then 
-ssh git@superkompras.com.br 'bash -s' < /home/superBits/superBitsDevOps/SCRIPTS_SERVIDOR/criarBancoDeDados.sh $NOME_PROJETO
-=======
-ssh git@marketingparaweb.com.br 'bash -s' < /home/superBits/superBitsDevOps/SCRIPTS_SERVIDOR/atualizarProjeto.sh $NOME_PROJETO $respAtualizarRequisito
+ssh git@marketingparaweb.com.br 'bash -s' < /home/superBits/superBitsDevOps/SCRIPTS_SERVIDOR/atualizarProjeto.sh $NOME_GRUPO_PROJETO $respAtualizarRequisito
 
 if [[ $respostaUsuario == *"$frase_chave"* ]]
 then 
-ssh git@marketingparaweb.com.br 'bash -s' < /home/superBits/superBitsDevOps/SCRIPTS_SERVIDOR/criarBancoDeDados.sh $NOME_PROJETO
->>>>>>> 4c3dda46ad9e2cff2a24d35a2ac1074d4b462f03
-fi 
 
+ssh git@marketingparaweb.com.br 'bash -s' < /home/superBits/superBitsDevOps/SCRIPTS_SERVIDOR/criarBancoDeDados.sh $NOME_GRUPO_PROJETO
+fi
