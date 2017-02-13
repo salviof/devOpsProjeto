@@ -38,11 +38,8 @@ alerta "E CLONARr novamente via: $SERVIDOR_GIT_RELEASE"
 read respostaUsuario
 
 
-if [[ $respostaUsuario == "SIM" ]]
+if [[ ! $respostaUsuario == "SIM" ]]
 then
-cd $CAMINHO_RELEASE
-git clone $SERVIDOR_GIT_RELEASE
-else
  alerta "Impossível subir sem um diretorio vinculado a um repositório git"
  exit $E_BADARGS
 fi
@@ -51,7 +48,38 @@ fi
 
 fi
 
+echo "---"
+alerta "Deseja LIMPAR seu repositorio e o do servidor?"
+alerta "digite SIM para LIMPAR e realizar BACKUP do projeto: $NOME_PROJETO"
+read respostaLimpar
 
+if [[ $respostaLimpar == "SIM" || $respostaUsuario == "SIM" ]]
+then
+if [ $respostaLimpar == "SIM" ]
+then
+
+alerta "REMOVENDO repositorio do servidor"
+  ssh git@marketingparaweb.com.br 'bash -s' < /home/superBits/superBitsDevOps/SCRIPTS_SERVIDOR/removerRepositorioRelease.sh $NOME_PROJETO
+  alerta "CRIANDO repositorio do servidor"
+  ssh git@marketingparaweb.com.br 'bash -s' < /home/superBits/superBitsDevOps/SCRIPTS_SERVIDOR/criarRepositorioRelease.sh $NOME_PROJETO
+fi
+
+alerta "APAGANDO DIRETORIO: $CAMINHO_RELEASE/$NOME_PROJETO"
+rm $CAMINHO_RELEASE/$NOME_PROJETO -r -f
+alerta "DIRETORIO EXCLUIDO COM SUCESSO"
+alerta "Acessando diretorio: $CAMINHO_RELEASE"
+cd $CAMINHO_RELEASE
+alerta "Iniciando processo de clonagem do servidor"
+git clone $SERVIDOR_GIT_RELEASE/$NOME_PROJETO.git
+alerta "Clonagem realizada com SUCESSO"
+fi
+
+if [ ${#respostaLimpar} == 0 ]
+then
+
+respostaLimpar="NAO"
+
+fi
 
 
 
@@ -122,15 +150,15 @@ alerta "Iniciando compilação de: $CAMINHO_CLIENTE_SOURCE"
 
 alerta "Compilando model em: $CAMINHO_MODEL_PROJETO"
 cd $CAMINHO_MODEL_PROJETO
-source /home/superBits/superBitsDevOps/devOpsProjeto/compilar.sh
+#source /home/superBits/superBitsDevOps/devOpsProjeto/compilar.sh
 alerta "Compilando webApp em: $CAMINHO_WEBAPP_PROJETO"
 cd $CAMINHO_WEBAPP_PROJETO
-source /home/superBits/superBitsDevOps/devOpsProjeto/compilar.sh
+#source /home/superBits/superBitsDevOps/devOpsProjeto/compilar.sh
 
 if $ATUALIZAR_REQUISITO ; then
 alerta "Compilando requisitos em: $CAMINHO_WEBAPP_REQUISITO_PROJETO"
 cd $CAMINHO_WEBAPP_REQUISITO_PROJETO
-source /home/superBits/superBitsDevOps/devOpsProjeto/compilar.sh
+#source /home/superBits/superBitsDevOps/devOpsProjeto/compilar.sh
 fi
 
 
@@ -295,7 +323,7 @@ git push origin master
 alerta "Operações locais realizadas com sucesso, executando atualizações no servidor $NOME_GRUPO_PROJETO"
 
 
-ssh git@marketingparaweb.com.br 'bash -s' < /home/superBits/superBitsDevOps/SCRIPTS_SERVIDOR/atualizarProjeto.sh $NOME_GRUPO_PROJETO $respAtualizarRequisito
+ssh git@marketingparaweb.com.br 'bash -s' < /home/superBits/superBitsDevOps/SCRIPTS_SERVIDOR/atualizarProjeto.sh $NOME_GRUPO_PROJETO $respAtualizarRequisito $respostaLimpar
 
 if [[ $respostaUsuario == *"$frase_chave"* ]]
 then 
