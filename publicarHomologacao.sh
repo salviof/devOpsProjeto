@@ -309,8 +309,8 @@ alerta "preparando para enviar o repositório para o servidor em $CAMINHO_RELEAS
 
 cd $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO
 
-
-
+alerta "Atualizando repositório para evitar Merge  (git pull)"
+git pull
 alerta "git add --all"
 git add --all 
 alerta "git commit"
