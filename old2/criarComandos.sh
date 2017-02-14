@@ -1,2 +1,0 @@
-cp ./comandosRaizProjeto/* ../ -r -f 
-
