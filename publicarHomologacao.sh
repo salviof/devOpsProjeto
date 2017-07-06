@@ -319,9 +319,10 @@ alerta "git push origin master"
 git push origin master -f
 alerta "git push origin master"
 git push origin master 
-
-alerta "Operações locais realizadas com sucesso, executando atualizações no servidor $NOME_GRUPO_PROJETO"
-
+alerta "
+***************************ATENÇÃO ********************************
+Operações locais realizadas com sucesso, executando atualizações no servidor $NOME_GRUPO_PROJETO
+***************************ATENÇÃO ********************************"
 
 ssh git@marketingparaweb.com.br 'bash -s' < /home/superBits/superBitsDevOps/SCRIPTS_SERVIDOR/atualizarProjeto.sh $NOME_GRUPO_PROJETO $respAtualizarRequisito $respostaLimpar
 
