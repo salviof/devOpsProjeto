@@ -150,15 +150,15 @@ alerta "Iniciando compilação de: $CAMINHO_CLIENTE_SOURCE"
 
 alerta "Compilando model em: $CAMINHO_MODEL_PROJETO"
 cd $CAMINHO_MODEL_PROJETO
-#source /home/superBits/superBitsDevOps/devOpsProjeto/compilar.sh
+source /home/superBits/superBitsDevOps/devOpsProjeto/compilar.sh
 alerta "Compilando webApp em: $CAMINHO_WEBAPP_PROJETO"
 cd $CAMINHO_WEBAPP_PROJETO
-#source /home/superBits/superBitsDevOps/devOpsProjeto/compilar.sh
+source /home/superBits/superBitsDevOps/devOpsProjeto/compilar.sh
 
 if $ATUALIZAR_REQUISITO ; then
 alerta "Compilando requisitos em: $CAMINHO_WEBAPP_REQUISITO_PROJETO"
 cd $CAMINHO_WEBAPP_REQUISITO_PROJETO
-#source /home/superBits/superBitsDevOps/devOpsProjeto/compilar.sh
+source /home/superBits/superBitsDevOps/devOpsProjeto/compilar.sh
 fi
 
 
