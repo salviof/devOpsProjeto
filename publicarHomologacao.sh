@@ -156,9 +156,15 @@ cd $CAMINHO_WEBAPP_PROJETO
 source /home/superBits/superBitsDevOps/devOpsProjeto/compilar.sh
 
 if $ATUALIZAR_REQUISITO ; then
+<<<<<<< HEAD
 	alerta "Compilando requisitos em: $CAMINHO_WEBAPP_REQUISITO_PROJETO"
 	cd $CAMINHO_WEBAPP_REQUISITO_PROJETO
 	source /home/superBits/superBitsDevOps/devOpsProjeto/compilar.sh
+=======
+alerta "Compilando requisitos em: $CAMINHO_WEBAPP_REQUISITO_PROJETO"
+cd $CAMINHO_WEBAPP_REQUISITO_PROJETO
+source /home/superBits/superBitsDevOps/devOpsProjeto/compilar.sh
+>>>>>>> c89f19c7f998258842152fa1c7c42ad7e488ec55
 fi
 
 
@@ -319,9 +325,10 @@ alerta "git push origin master"
 git push origin master -f
 alerta "git push origin master"
 git push origin master 
-
-alerta "Operações locais realizadas com sucesso, executando atualizações no servidor $NOME_GRUPO_PROJETO"
-
+alerta "
+***************************ATENÇÃO ********************************
+Operações locais realizadas com sucesso, executando atualizações no servidor $NOME_GRUPO_PROJETO
+***************************ATENÇÃO ********************************"
 
 ssh git@marketingparaweb.com.br 'bash -s' < /home/superBits/superBitsDevOps/SCRIPTS_SERVIDOR/atualizarProjeto.sh $NOME_GRUPO_PROJETO $respAtualizarRequisito $respostaLimpar
 
