@@ -156,15 +156,10 @@ cd $CAMINHO_WEBAPP_PROJETO
 source /home/superBits/superBitsDevOps/devOpsProjeto/compilar.sh
 
 if $ATUALIZAR_REQUISITO ; then
-<<<<<<< HEAD
 	alerta "Compilando requisitos em: $CAMINHO_WEBAPP_REQUISITO_PROJETO"
 	cd $CAMINHO_WEBAPP_REQUISITO_PROJETO
 	source /home/superBits/superBitsDevOps/devOpsProjeto/compilar.sh
-=======
-alerta "Compilando requisitos em: $CAMINHO_WEBAPP_REQUISITO_PROJETO"
-cd $CAMINHO_WEBAPP_REQUISITO_PROJETO
-source /home/superBits/superBitsDevOps/devOpsProjeto/compilar.sh
->>>>>>> c89f19c7f998258842152fa1c7c42ad7e488ec55
+
 fi
 
 
