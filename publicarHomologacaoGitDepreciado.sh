@@ -27,9 +27,59 @@ alerta "Carregando variaveis de ambiente"
 source /home/superBits/superBitsDevOps/VARIAVEIS/SB_VARIAVEIS_MAVEN_GIT.sh $diretorioChamada $nomeScript
 source $CAMINHO_RELEASE/cliente.info
 
+alerta "Verificando estrutura de diretorios"
+CAMINHO_PASTA_CONFIG_GIT=$CAMINHO_RELEASE/$NOME_PROJETO/.git
+if [ ! -d "$CAMINHO_PASTA_CONFIG_GIT" ]; then
+	# PASTA DO CLIENTE NÃO EXISTE
+	echo "---"
+	alerta "A pasta do repositório reliase não contem o subdiretorio .git ou não existe"
+	alerta  "digite    -->SIM--< se deseja EXLUIR a pasta: [$CAMINHO_RELEASE/$NOME_PROJETO/]"
+	alerta "E CLONARr novamente via: $SERVIDOR_GIT_RELEASE"
+	read respostaUsuario
 
+
+	if [[ ! $respostaUsuario == "SIM" ]]
+	then
+		alerta "Impossível subir sem um diretorio vinculado a um repositório git"
+		exit $E_BADARGS
+	fi
+
+
+
+fi
+
+echo "---"
+alerta "Deseja LIMPAR seu repositorio e o do servidor?"
+alerta "digite SIM para LIMPAR e realizar BACKUP do projeto: $NOME_PROJETO"
+read respostaLimpar
+
+if [[ $respostaLimpar == "SIM" || $respostaUsuario == "SIM" ]]
+then
+	if [ $respostaLimpar == "SIM" ]
+	then
+
+		alerta "REMOVENDO repositorio do servidor"
+		ssh git@casanovadigital.com.br -p 667 'bash -s' < /home/superBits/superBitsDevOps/SCRIPTS_SERVIDOR/removerRepositorioRelease.sh $NOME_PROJETO
+		alerta "CRIANDO repositorio do servidor"
+		ssh git@casanovadigital.com.br -p 667 'bash -s' < /home/superBits/superBitsDevOps/SCRIPTS_SERVIDOR/criarRepositorioRelease.sh $NOME_PROJETO
+	fi
+
+	alerta "APAGANDO DIRETORIO: $CAMINHO_RELEASE/$NOME_PROJETO"
+	rm $CAMINHO_RELEASE/$NOME_PROJETO -r -f
+	alerta "DIRETORIO EXCLUIDO COM SUCESSO"
+	alerta "Acessando diretorio: $CAMINHO_RELEASE"
+	cd $CAMINHO_RELEASE
+	alerta "Iniciando processo de clonagem do servidor"
+	git clone $SERVIDOR_GIT_RELEASE/$NOME_PROJETO.git
+	alerta "Clonagem realizada com SUCESSO"
+fi
+
+if [ ${#respostaLimpar} == 0 ]
+then
 
 	respostaLimpar="NAO"
+
+fi
 
 
 
@@ -215,7 +265,7 @@ fi
 
 
 
-if [ ! -e "$CAMINHO_SOURCE_PROJETO/SBProjeto.prop" ]
+if [ ! -f "$CAMINHO_SOURCE_PROJETO/SBProjeto.prop" ]
 then
 	alerta "O Arquivo SBProjeto.prop não foi encontrada na pasta raiz do projeto, execute um teste do projeto WebApp para que o arquivo seja criado automaticamente.  "
 	exit $E_BADARGS
@@ -258,21 +308,27 @@ fi
 
 alerta "preparando para enviar o repositório para o servidor em $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO"
 
+
+
 cd $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO
 
-rsync -avz --exclude='*/.git'  -e "ssh -p 667" $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/*   git@casanovadigital.com.br:~/publicados/$NOME_GRUPO_PROJETO/ 
-
-alerta "***************************ATENÇÃO ********************************
-  Operações locais realizadas com sucesso, executando atualizações no servidor $NOME_GRUPO_PROJETO
- ***************************ATENÇÃO ********************************"
+alerta "git add --all"
+git add --all 
+alerta "git commit"
+git commit -m "Atualizavao versao $(date '+%d/%m/%Y %H:%M:%S')"
+alerta "git push origin master"
+git push origin master -f
+alerta "git push origin master"
+git push origin master 
+alerta "
+***************************ATENÇÃO ********************************
+Operações locais realizadas com sucesso, executando atualizações no servidor $NOME_GRUPO_PROJETO
+***************************ATENÇÃO ********************************"
 
 ssh git@casanovadigital.com.br -p 667 'bash -s' < /home/superBits/superBitsDevOps/SCRIPTS_SERVIDOR/atualizarProjeto.sh $NOME_GRUPO_PROJETO $respAtualizarRequisito $respostaLimpar
 
 if [[ $respostaUsuario == *"$frase_chave"* ]]
 then 
+
 	ssh git@casanovadigital.com.br -p 667 'bash -s' < /home/superBits/superBitsDevOps/SCRIPTS_SERVIDOR/criarBancoDeDados.sh $NOME_GRUPO_PROJETO
 fi
-
-
-
-
