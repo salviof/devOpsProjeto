@@ -3,18 +3,6 @@ ARGUMENTOS_ESPERADOS=2
 diretorioChamada=$1
 nomeScript=$2
 
-RESTORE='\033[0m'
-function alerta() {
-	mensagem="$1"
-	echo -e -n "\033[1;36m$mensagem"   
-	echo -en "${RESTORE}"
-	echo " "
-}
-
-
-
-
-
 
 # Verificando se o o Cliente e o Projeto foram enviados
 if [ $# -ne $ARGUMENTOS_ESPERADOS ]
@@ -23,22 +11,19 @@ then
 	exit $E_BADARGS
 fi
 
-alerta "Carregando variaveis de ambiente"
-source /home/superBits/superBitsDevOps/VARIAVEIS/SB_VARIAVEIS_MAVEN_GIT.sh $diretorioChamada $nomeScript
 source $CAMINHO_RELEASE/cliente.info
 
 
-
-	respostaLimpar="NAO"
+respostaLimpar="NAO"
 
 
 
 frase_chave="QUERO APAGAR TUDO"
 alerta "
 
-***************************ATENÇÃO*********************************************
+***************************ATENÇÃO********************************************* 
 
-Este script irá atualizar o projeto $NOME_PROJETO WebApp e os Requisitos 
+Este script irá atualizar o projeto $NOME_PROJETO WebApp e os Requisitos  \n
 
 Você pode:
 pressionar ctr+c para cancelar
@@ -49,7 +34,7 @@ read respostaUsuario
 
 if [[ $respostaUsuario == *"$frase_chave"* ]]
 then 
-	alerta "
+	alertaMuitoImportante "
 	***************************ATENÇÃO - ULTIMO ALERTA ********************************
 
 	O BANCO DE DADOS DO SERVIDOR REMOTO SERÁ DESTRUIDO SEM BACKUP, 
