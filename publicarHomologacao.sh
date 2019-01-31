@@ -14,11 +14,6 @@ fi
 source $CAMINHO_RELEASE/cliente.info
 
 
-respostaLimpar="NAO"
-
-
-
-frase_chave="QUERO APAGAR TUDO"
 alerta "
 
 ***************************ATENÇÃO********************************************* 
@@ -26,33 +21,18 @@ alerta "
 Este script irá atualizar o projeto $NOME_PROJETO WebApp e os Requisitos  \n
 
 Você pode:
-pressionar ctr+c para cancelar
-entar para subir
-ou digitar $frase_chave para apagar tudo e instalar uma versão nova do banco de dados"
-read respostaUsuario
+pressionar ctr+c para cancelar enter para subir o arquivo de implantação \n
 
-
-if [[ $respostaUsuario == *"$frase_chave"* ]]
-then 
-	alertaMuitoImportante "
-	***************************ATENÇÃO - ULTIMO ALERTA ********************************
-
-	O BANCO DE DADOS DO SERVIDOR REMOTO SERÁ DESTRUIDO SEM BACKUP, 
-	em seguida o sistema vai subir o banco no estado inciial.
-
-	Para cancelar ctr+C
-
-	***************************PERIGO !*********************************************
-
-	"
-else 
-	alerta "O banco de dados no servidor NÃÃOOO será destruído"
-fi 
-
-
-
-alerta "-> Escreva SIM caso queira atualizar também os requisitos do projeto
+*Este script apenas envia os arquivos war para o servidor de implantação ! \n
+-> a implantação deve ser acionada pelo Jenkins ( aquele seu mordomo sagaz open-source, que faz o trabalho pesado para você)
 "
+
+pause
+
+
+
+alerta "Deseja implantar a exibição de requisitos em tempo real do projeto (Disponível apenas para membros do coletivoJava.com.br)"
+alerta "-> Escreva SIM caso queira atualizar também os requisitos do projeto"
 read respAtualizarRequisito
 ATUALIZAR_REQUISITO=false
 if [[ $respAtualizarRequisito == *"SIM"* ]]
@@ -66,8 +46,6 @@ else
 	respAtualizarRequisito="NAO"
 	alerta "O requisito NÃÃOOO será atualizado (o sim deve ser Maiusculo)" 
 fi
-
-
 
 
 
@@ -167,11 +145,7 @@ do
 done < <(ls *.jar )
 ARQUIVO_MODEL=${modelfile[0]}
 alerta "Encontrado arquivo: $ARQUIVO_MODEL"
-#alerta "executando backup do servidor"
-#ssh git@marketingparaweb.com.br 'bash -s' < /home/superBits/superBitsDevOps/SCRIPTS_SERVIDOR/realizarBackup.sh $NOME_PROJETO $respAtualizarRequisito
-#alerta "Fim Bakcup no servidor"
-#alerta "Preparando repositorio para envio em $CAMINHO_RELEASE/$NOME_PROJETO"
-#cd $CAMINHO_RELEASE/$NOME_PROJETO
+
 
 # TODO EM VARIAVEIS GIT ALTERAR NOM_PROJETO PARA NOME GRUPO PROJETO
 NOME_GRUPO_PROJETO=$NOME_PROJETO
@@ -188,15 +162,8 @@ if $ATUALIZAR_REQUISITO ; then
 	source $CAMINHO_SOURCE_PROJETO/req_SBProjeto.prop
 	cp  $CAMINHO_SOURCE_PROJETO/req_SBProjeto.prop  $CAMINHO_RELEASE/$NOME_PROJETO/ -f
 	alerta  "copiando arquivos de banco de dados do requisito"
-	cp $CAMINHO_SOURCE_PROJETO/$NOME_BANCO.Homologacao.sql $CAMINHO_RELEASE/$NOME_PROJETO/ -f
+	cp $CAMINHO_SOURCE_PROJETO/$NOME_BANCO.Homologacao.sql $CAMINHO_RELEASE/$NOME_PROJETO/javaee_app -f
 fi
-
-#git checkout -f
-#git checkout --theirs -- .
-#git checkout -f
-
-#git pull origin master 
-
 
 
 
@@ -212,14 +179,14 @@ alerta "Copiando arquivo de variaveis do projeot para repositorio"
 cp  $CAMINHO_SOURCE_PROJETO/SBProjeto.prop  $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/ -f
 
 alerta "copiando arquivos de banco de dados"
-cp $CAMINHO_SOURCE_PROJETO/$NOME_BANCO.Homologacao.sql $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/ -f
+cp $CAMINHO_SOURCE_PROJETO/$NOME_BANCO.Homologacao.sql $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/javaee_app -f
 
 #COPIANDO PARA PASTA DE IMPLANTAÇÃO
 alerta "copiando war WebApp "
 alerta " de: $CAMINHO_WEBAPP_TARGET/$ARQUIVO_WEBAAP"
-alerta "para $CAMINHO_RELEASE/$NOME_PROJETO/$NOME_GRUPO_PROJETO.war"
+alerta "para $CAMINHO_RELEASE/$NOME_PROJETO/javaee_app/$NOME_GRUPO_PROJETO.war"
 
-cp $CAMINHO_WEBAPP_TARGET/$ARQUIVO_WEBAAP $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/$NOME_GRUPO_PROJETO.war -f
+cp $CAMINHO_WEBAPP_TARGET/$ARQUIVO_WEBAAP $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/javaee_app/$NOME_GRUPO_PROJETO.war -f
 
 alerta "copiando jar model "
 alerta " de  $CAMINHO_MODEL_TARGET/$ARQUIVO_MODEL "
@@ -237,26 +204,23 @@ cp $CAMINHO_CLIENTE_RELEASE/cliente.info  $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO
 if $ATUALIZAR_REQUISITO ; then
 	alerta "copiando de "
 	alerta " de: $CAMINHO_WEBAPP_REQUISITO_PROJETO_TARGET/$ARQUIVO_WEBAAP_REQUISITO"
-	alerta "para $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/$NOME_GRUPO_PROJETO.req.war"
-	cp $CAMINHO_WEBAPP_REQUISITO_PROJETO_TARGET/$ARQUIVO_WEBAAP_REQUISITO $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/$NOME_GRUPO_PROJETO.req.war -f
+	alerta "para $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/javaee_requisitoweb/$NOME_GRUPO_PROJETO.req.war"
+	cp $CAMINHO_WEBAPP_REQUISITO_PROJETO_TARGET/$ARQUIVO_WEBAAP_REQUISITO $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/javaee_requisitoweb/$NOME_GRUPO_PROJETO.req.war -f
 fi
 
 alerta "preparando para enviar o repositório para o servidor em $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO"
 
 cd $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO
 
-rsync -avz --exclude='*/.git'  -e "ssh -p 667" $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/*   git@casanovadigital.com.br:~/publicados/$NOME_GRUPO_PROJETO/ 
+rsync -avz --exclude='*/.git'  -e "ssh -p 667" $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/*   git@casanovadigital.com.br:/opt/traefik/configServidor/jenkins/workspace/javee_files/$NOME_GRUPO_PROJETO/ 
 
 alerta "***************************ATENÇÃO ********************************
   Operações locais realizadas com sucesso, executando atualizações no servidor $NOME_GRUPO_PROJETO
  ***************************ATENÇÃO ********************************"
 
-ssh git@casanovadigital.com.br -p 667 'bash -s' < /home/superBits/superBitsDevOps/SCRIPTS_SERVIDOR/atualizarProjeto.sh $NOME_GRUPO_PROJETO $respAtualizarRequisito $respostaLimpar
 
-if [[ $respostaUsuario == *"$frase_chave"* ]]
-then 
-	ssh git@casanovadigital.com.br -p 667 'bash -s' < /home/superBits/superBitsDevOps/SCRIPTS_SERVIDOR/criarBancoDeDados.sh $NOME_GRUPO_PROJETO
-fi
+
+
 
 
 
