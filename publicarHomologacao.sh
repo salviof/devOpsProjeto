@@ -18,7 +18,7 @@ alerta "
 
 ***************************ATENÇÃO********************************************* 
 
-Este script irá atualizar o projeto $NOME_PROJETO WebApp e os Requisitos  \n
+Este script irá atualizar o projeto javaee: $NOME_PROJETO   \n
 
 Você pode:
 pressionar ctr+c para cancelar enter para subir o arquivo de implantação \n
@@ -212,10 +212,10 @@ alerta "preparando para enviar o repositório para o servidor em $CAMINHO_RELEAS
 
 cd $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO
 
-rsync -avz --exclude='*/.git'  -e "ssh -p 667" $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/*   git@casanovadigital.com.br:/opt/traefik/configServidor/jenkins/workspace/javee_files/$NOME_GRUPO_PROJETO/ 
+rsync -avz --exclude='*/.git'  -e "ssh -p 667" $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/*   root@chat.casanovadigital.com.br:/opt/traefik/configServidor/jenkins/workspace/javee_files/$NOME_GRUPO_PROJETO/ 
 
 alerta "***************************ATENÇÃO ********************************
-  Operações locais realizadas com sucesso, executando atualizações no servidor $NOME_GRUPO_PROJETO
+  Operações locais realizadas com sucesso
  ***************************ATENÇÃO ********************************"
 
 
