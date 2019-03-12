@@ -178,6 +178,10 @@ source $CAMINHO_SOURCE_PROJETO/SBProjeto.prop
 alerta "Copiando arquivo de variaveis do projeot para repositorio"
 cp  $CAMINHO_SOURCE_PROJETO/SBProjeto.prop  $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/ -f
 
+echo "criando subdiretorios na pasta release"
+mkdir $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/javaee_app -p
+mkdir  $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/javaee_requisitoweb -p
+
 alerta "copiando arquivos de banco de dados"
 cp $CAMINHO_SOURCE_PROJETO/$NOME_BANCO.Homologacao.sql $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/javaee_app -f
 
@@ -212,7 +216,7 @@ alerta "preparando para enviar o repositório para o servidor em $CAMINHO_RELEAS
 
 cd $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO
 
-rsync -avz --exclude='*/.git'  -e "ssh -p 667" $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/*   root@chat.casanovadigital.com.br:/opt/traefik/configServidor/jenkins/workspace/javee_files/$NOME_GRUPO_PROJETO/ 
+rsync -avzh --exclude='*/.git'  -e "ssh -p 667" $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/*   root@chat.casanovadigital.com.br:/opt/traefik/configServidor/jenkins/workspace/javee_files/$NOME_GRUPO_PROJETO/ 
 
 alerta "***************************ATENÇÃO ********************************
   Operações locais realizadas com sucesso
