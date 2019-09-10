@@ -13,6 +13,33 @@ fi
 
 source $CAMINHO_RELEASE/cliente.info
 
+alerta "Verificando informações de implantação"
+
+
+TIPOS_REGISTRO_DOCKER=("LOCAL" "AMAZON" "DOCKERHUB")
+if [ -n "$HOST_RESPOSITORIO_DOCKER" ]; then
+  echo "You supplied the first parameter!"
+fi
+
+
+REGISTRO_DOCKER="LOCAL"
+if echo ${TIPOS_REGISTRO_DOCKER[@]} | grep -q -w "$REGISTRO_DOCKER"; then 
+    echo "o tipo de publicação da imagem docker é $REGISTRO_DOCKER"
+else 
+    echo "os valores aceitaveis para variavel  REGISTRO_DOCKER são: "
+    echo ${TIPOS_REGISTRO_DOCKER[@]} 
+    exit $E_BADARGS
+
+fi
+
+
+if [ -z "$HOST_DOCKER_COMPOSER" ] then
+ echo "A variavel host docker composer"
+ exit $E_BADARGS
+fi
+
+
+
 
 alerta "
 
@@ -23,7 +50,7 @@ Este script irá atualizar o projeto javaee: $NOME_PROJETO   \n
 Você pode:
 pressionar ctr+c para cancelar enter para subir o arquivo de implantação \n
 
-*Este script apenas envia os arquivos war para o servidor de implantação ! \n
+*Este script apenas compila, e atualiza as imagens docker, para o servidor de implantação ! \n
 -> a implantação deve ser acionada pelo Jenkins ( aquele seu mordomo sagaz open-source, que faz o trabalho pesado para você)
 "
 
@@ -216,13 +243,14 @@ alerta "preparando para enviar o repositório para o servidor em $CAMINHO_RELEAS
 
 cd $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO
 
-rsync -avzh --exclude='*/.git'  -e "ssh -p 667" $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/*   root@chat.casanovadigital.com.br:/opt/traefik/configServidor/jenkins/workspace/javee_files/$NOME_GRUPO_PROJETO/ 
+
+
+echo "enviando arquivos DockerFile para publicação local"
+rsync -avzh --exclude='*/.git'  -e "ssh -p 667" $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/*   root@chat.casanovadigital.com.br:/opt/traefik/configServidor/jenkins/workspace/javee_files/$NOME_GRUPO_PROJETO/
 
 alerta "***************************ATENÇÃO ********************************
   Operações locais realizadas com sucesso
  ***************************ATENÇÃO ********************************"
-
-
 
 
 
