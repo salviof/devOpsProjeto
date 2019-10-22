@@ -215,7 +215,7 @@ fi
 alerta "preparando para enviar o repositório para o servidor em $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO"
 
 cd $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO
-
+alerta "enviando para root@casanovadigital /opt/traefik/configServidor/jenkins/workspace/javee_files/$NOME_GRUPO_PROJETO/"
 rsync -avzh --exclude='*/.git'  -e "ssh -p 667" $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/*   root@chat.casanovadigital.com.br:/opt/traefik/configServidor/jenkins/workspace/javee_files/$NOME_GRUPO_PROJETO/ 
 
 alerta "***************************ATENÇÃO ********************************
