@@ -225,16 +225,12 @@ else
 	
 
 cd $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO
-<<<<<<< HEAD
-alerta "enviando para root@casanovadigital /opt/traefik/configServidor/jenkins/workspace/javee_files/$NOME_GRUPO_PROJETO/"
-rsync -avzh --exclude='*/.git'  -e "ssh -p 667" $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/*   root@chat.casanovadigital.com.br:/opt/traefik/configServidor/jenkins/workspace/javee_files/$NOME_GRUPO_PROJETO/ 
-=======
 
+alerta "O sistema irá enviar o DockerFile para o servidor de distribuição"
 echo "enviando arquivos DockerFile para publicação no serividor"
 rsync -avzh --exclude='*/.git'  -e "ssh -p 667" $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/*   root@casanovadigital.com.br:/opt/traefik/configServidor/jenkins/workspace/javee_files/$NOME_GRUPO_PROJETO/
 
 fi
->>>>>>> ec478f475b8fbcbb64bf89eacbbcb1bac0cef5a5
 
 alerta "***************************ATENÇÃO ********************************
   A imagem foi publicada
