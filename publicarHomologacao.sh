@@ -210,20 +210,30 @@ if $ATUALIZAR_REQUISITO ; then
 	cp $CAMINHO_WEBAPP_REQUISITO_PROJETO_TARGET/$ARQUIVO_WEBAAP_REQUISITO $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/javaee_requisitoweb/$NOME_GRUPO_PROJETO.req.war -f
 fi
 alerta "preparando para enviar o repositório para o servidor em $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO"
-
+publicarCIColetivojava=true
 if [ -d "$CAMINHO_WEBAPP_PROJETO/src/main/resources/deploy" ] 
 then
     alerta "Arquivos de personalização de implantação foram encontrados, executando sequencia para publicação" 
-    cp $CAMINHO_WEBAPP_PROJETO/src/main/resources/deploy $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO -f -R
+    cp $CAMINHO_WEBAPP_PROJETO/src/main/resources/deploy/* $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/deploy/$BRANCH_ATUAL -f -R
+    #Arquivo war recem compílado
     cp $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/javaee_app/* $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/deploy/$BRANCH_ATUAL -f	
 
-    cp $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/deploy/Dockerfile $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/deploy/$BRANCH_ATUAL -f
+#    cp $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/deploy/Dockerfile $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/deploy/$BRANCH_ATUAL -f
     cd $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/deploy/$BRANCH_ATUAL
     echo "compilando imagem em $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/deploy/$BRANCH_ATUAL"
+    if test -f $CAMINHO_WEBAPP_PROJETO/src/main/resources/deploy/publicar.sh; then
+     alerta "Publicando aplicativo com chamada personalizada via "
+     $publicarCIColetivojava=false
     source $CAMINHO_WEBAPP_PROJETO/src/main/resources/deploy/publicar.sh $BRANCH_ATUAL
+
+    else
+        echo "enviando arquivos DockerFile para publicação no serividor"
+        rsync -avzh --exclude='*/.git'  -e "ssh -p 667" $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/deploy/$BRANCH_ATUAL/* root@casanovadigital.com.br:/opt/traefik/configServidor/jenkins/workspace/javee_files/$NOME_GRUPO_PROJETO/javaee_app
+
+    fi
+    
 else 
 	
-
 cd $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO
 
 alerta "O sistema irá enviar o DockerFile para o servidor de distribuição"
