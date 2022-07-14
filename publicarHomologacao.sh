@@ -65,6 +65,20 @@ CAMINHO_SOURCE_PROJETO=$CAMINHO_CLIENTE_SOURCE/$NOME_PROJETO
 cd $CAMINHO_CLIENTE_SOURCE/$NOME_PROJETO
 BRANCH_ATUAL=$(git branch | sed -n -e 's/^\* \(.*\)/\1/p')
 
+if [ -d "$CAMINHO_WEBAPP_PROJETO/src/main/resources/deploy/$BRANCH_ATUAL" ] 
+then
+CAMINHO_LOCAL_TEMPORARIO=$CAMINHO_RELEASE/$NOME_PROJETO/javaee_app
+NOME_ARQUIVO_WAR_DEPLOY=$NOME_GRUPO_PROJETO.war
+else
+CAMINHO_LOCAL_TEMPORARIO=$CAMINHO_RELEASE/$NOME_PROJETO/deploy/$BRANCH_ATUAL
+NOME_ARQUIVO_WAR_DEPLOY=$NOME_GRUPO_PROJETO$BRANCH_ATUAL.war
+fi
+
+echo "os arquivos temporarios serão gerados em $CAMINHO_LOCAL_TEMPORARIO"
+
+
+
+
 if [ -z "$BRANCH_ATUAL" ]; then
 alerta "A branch não foi encontrada ! $BRANCH_ATUAL ;) "
 	exit $E_BADARGS
@@ -168,7 +182,7 @@ if $ATUALIZAR_REQUISITO ; then
 	source $CAMINHO_SOURCE_PROJETO/req_SBProjeto.prop
 	cp  $CAMINHO_SOURCE_PROJETO/req_SBProjeto.prop  $CAMINHO_RELEASE/$NOME_PROJETO/ -f
 	alerta  "copiando arquivos de banco de dados do requisito"
-	cp $CAMINHO_SOURCE_PROJETO/$NOME_BANCO.Homologacao.sql $CAMINHO_RELEASE/$NOME_PROJETO/javaee_app -f
+	cp $CAMINHO_SOURCE_PROJETO/$NOME_BANCO.Homologacao.sql $CAMINHO_LOCAL_TEMPORARIO -f
 fi
 if [ ! -e "$CAMINHO_SOURCE_PROJETO/SBProjeto.prop" ]
 then
@@ -182,18 +196,18 @@ alerta "Copiando arquivo de variaveis do projeot para repositorio"
 cp  $CAMINHO_SOURCE_PROJETO/SBProjeto.prop  $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/ -f
 
 echo "criando subdiretorios na pasta release"
-mkdir $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/javaee_app -p
+mkdir $CAMINHO_LOCAL_TEMPORARIO -p
 mkdir  $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/javaee_requisitoweb -p
 
 alerta "copiando arquivos de banco de dados"
-cp $CAMINHO_SOURCE_PROJETO/$NOME_BANCO.Homologacao.sql $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/javaee_app -f
+cp $CAMINHO_SOURCE_PROJETO/$NOME_BANCO.Homologacao.sql $CAMINHO_LOCAL_TEMPORARIO -f
 
 #COPIANDO PARA PASTA DE IMPLANTAÇÃO
 alerta "copiando war WebApp "
 alerta " de: $CAMINHO_WEBAPP_TARGET/$ARQUIVO_WEBAAP"
-alerta "para $CAMINHO_RELEASE/$NOME_PROJETO/javaee_app/$NOME_GRUPO_PROJETO.war"
+alerta "para $CAMINHO_LOCAL_TEMPORARIO/$NOME_GRUPO_PROJETO.war"
 
-cp $CAMINHO_WEBAPP_TARGET/$ARQUIVO_WEBAAP $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/javaee_app/$NOME_GRUPO_PROJETO.war -f
+cp $CAMINHO_WEBAPP_TARGET/$ARQUIVO_WEBAAP $CAMINHO_LOCAL_TEMPORARIO/$NOME_ARQUIVO_WAR_DEPLOY -f
 
 alerta "copiando jar model "
 alerta " de  $CAMINHO_MODEL_TARGET/$ARQUIVO_MODEL "
@@ -211,25 +225,25 @@ if $ATUALIZAR_REQUISITO ; then
 fi
 alerta "preparando para enviar o repositório para o servidor em $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO"
 publicarCIColetivojava=true
-if [ -d "$CAMINHO_WEBAPP_PROJETO/src/main/resources/deploy" ] 
+if [ -d "$CAMINHO_WEBAPP_PROJETO/src/main/resources/deploy/$BRANCH_ATUAL" ] 
 then
+    	
     alerta "Arquivos de personalização de implantação foram encontrados, executando sequencia para publicação" 
-    cp $CAMINHO_WEBAPP_PROJETO/src/main/resources/deploy/* $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/deploy/$BRANCH_ATUAL -f -R
-    cp $CAMINHO_WEBAPP_TARGET/$ARQUIVO_WEBAAP $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/javaee_app/$NOME_GRUPO_PROJETO$BRANCH_ATUAL.war -f
+    cp $CAMINHO_WEBAPP_PROJETO/src/main/resources/deploy/* $CAMINHO_LOCAL_TEMPORARIO -f -R
+    cp $CAMINHO_WEBAPP_TARGET/$ARQUIVO_WEBAAP $CAMINHO_LOCAL_TEMPORARIO/$NOME_GRUPO_PROJETO$BRANCH_ATUAL.war -f
     #Arquivo war recem compílado
-    cp $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/javaee_app/* $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/deploy/$BRANCH_ATUAL -f	
+    #cp $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/javaee_app/* $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/deploy/$BRANCH_ATUAL -f	
 
 #    cp $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/deploy/Dockerfile $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/deploy/$BRANCH_ATUAL -f
-    cd $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/deploy/$BRANCH_ATUAL
+    cd $CAMINHO_LOCAL_TEMPORARIO
     echo "compilando imagem em $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/deploy/$BRANCH_ATUAL"
     if test -f $CAMINHO_WEBAPP_PROJETO/src/main/resources/deploy/publicar.sh; then
-     alerta "Publicando aplicativo com chamada personalizada via "
-     $publicarCIColetivojava=false
-    source $CAMINHO_WEBAPP_PROJETO/src/main/resources/deploy/publicar.sh $BRANCH_ATUAL
-
+     	alerta "Publicando aplicativo com chamada personalizada via "
+     	$publicarCIColetivojava=false
+    	source $CAMINHO_WEBAPP_PROJETO/src/main/resources/deploy/publicar.sh $BRANCH_ATUAL
     else
         echo "enviando arquivos DockerFile para publicação no serividor"
-        rsync -avzh --exclude='*/.git'  -e "ssh -p 667" $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/deploy/$BRANCH_ATUAL/* root@casanovadigital.com.br:/opt/traefik/configServidor/jenkins/workspace/javee_files/$NOME_GRUPO_PROJETO/javaee_app/deploy/$BRANCH_ATUAL/
+        rsync -avzh --exclude='*/.git'  -e "ssh -p 667" $CAMINHO_LOCAL_TEMPORARIO/* root@casanovadigital.com.br:/opt/traefik/configServidor/jenkins/workspace/javee_files/$NOME_GRUPO_PROJETO/javaee_app/deploy/$BRANCH_ATUAL/
 
     fi
     
@@ -239,7 +253,7 @@ cd $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO
 
 alerta "O sistema irá enviar o DockerFile para o servidor de distribuição"
 echo "enviando arquivos DockerFile para publicação no serividor"
-rsync -avzh --exclude='*/.git'  -e "ssh -p 667" $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/*   root@casanovadigital.com.br:/opt/traefik/configServidor/jenkins/workspace/javee_files/$NOME_GRUPO_PROJETO/
+rsync -avzh --exclude='*/.git'  -e "ssh -p 667" $CAMINHO_LOCAL_TEMPORARIO/*   root@casanovadigital.com.br:/opt/traefik/configServidor/jenkins/workspace/javee_files/$NOME_GRUPO_PROJETO/
 fi
 
 alerta "***************************ATENÇÃO ********************************
