@@ -215,6 +215,7 @@ if [ -d "$CAMINHO_WEBAPP_PROJETO/src/main/resources/deploy" ]
 then
     alerta "Arquivos de personalização de implantação foram encontrados, executando sequencia para publicação" 
     cp $CAMINHO_WEBAPP_PROJETO/src/main/resources/deploy/* $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/deploy/$BRANCH_ATUAL -f -R
+    cp $CAMINHO_WEBAPP_TARGET/$ARQUIVO_WEBAAP $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/javaee_app/$NOME_GRUPO_PROJETO$BRANCH_ATUAL.war -f
     #Arquivo war recem compílado
     cp $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/javaee_app/* $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/deploy/$BRANCH_ATUAL -f	
 
@@ -228,7 +229,7 @@ then
 
     else
         echo "enviando arquivos DockerFile para publicação no serividor"
-        rsync -avzh --exclude='*/.git'  -e "ssh -p 667" $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/deploy/$BRANCH_ATUAL/* root@casanovadigital.com.br:/opt/traefik/configServidor/jenkins/workspace/javee_files/$NOME_GRUPO_PROJETO/javaee_app
+        rsync -avzh --exclude='*/.git'  -e "ssh -p 667" $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/deploy/$BRANCH_ATUAL/* root@casanovadigital.com.br:/opt/traefik/configServidor/jenkins/workspace/javee_files/$NOME_GRUPO_PROJETO/javaee_app/deploy/$BRANCH_ATUAL/
 
     fi
     
@@ -239,7 +240,6 @@ cd $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO
 alerta "O sistema irá enviar o DockerFile para o servidor de distribuição"
 echo "enviando arquivos DockerFile para publicação no serividor"
 rsync -avzh --exclude='*/.git'  -e "ssh -p 667" $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO/*   root@casanovadigital.com.br:/opt/traefik/configServidor/jenkins/workspace/javee_files/$NOME_GRUPO_PROJETO/
-
 fi
 
 alerta "***************************ATENÇÃO ********************************
