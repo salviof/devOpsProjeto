@@ -61,17 +61,22 @@ CAMINHO_WEBAPP_TARGET=$CAMINHO_WEBAPP_PROJETO/target
 CAMINHO_MODEL_TARGET=$CAMINHO_MODEL_PROJETO/target
 CAMINHO_WEBAPP_REQUISITO_PROJETO_TARGET=$CAMINHO_WEBAPP_REQUISITO_PROJETO/target
 CAMINHO_SOURCE_PROJETO=$CAMINHO_CLIENTE_SOURCE/$NOME_PROJETO
+NOME_GRUPO_PROJETO=$NOME_PROJETO
 
 cd $CAMINHO_SOURCE_PROJETO
 BRANCH_ATUAL=$(git branch | sed -n -e 's/^\* \(.*\)/\1/p')
 echo "Branch atual definida para $BRANCH_ATUAL"
 if [ -d "$CAMINHO_WEBAPP_PROJETO/src/main/resources/deploy/$BRANCH_ATUAL" ] 
 then
+
 CAMINHO_LOCAL_TEMPORARIO=$CAMINHO_RELEASE/$NOME_PROJETO/deploy/$BRANCH_ATUAL
 NOME_ARQUIVO_WAR_DEPLOY=$NOME_GRUPO_PROJETO$BRANCH_ATUAL.war
 else
 CAMINHO_LOCAL_TEMPORARIO=$CAMINHO_RELEASE/$NOME_PROJETO/javaee_app
 NOME_ARQUIVO_WAR_DEPLOY=$NOME_GRUPO_PROJETO.war
+alerta "Estrategia brach padrão automático definida"
+
+
 fi
 
 echo "os arquivos temporarios serão gerados em $CAMINHO_LOCAL_TEMPORARIO"
@@ -84,6 +89,9 @@ alerta "A branch não foi encontrada ! $BRANCH_ATUAL ;) "
 	exit $E_BADARGS
 fi
 alerta "A Branch Atual é $BRANCH_ATUAL"
+
+alerta "Arquivo war  $NOME_ARQUIVO_WAR_DEPLOY "
+pause
 alerta "Iniciando compilação de: $CAMINHO_CLIENTE_SOURCE"
 
 alerta "Compilando model em: $CAMINHO_MODEL_PROJETO"
