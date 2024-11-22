@@ -2,6 +2,7 @@
 ARGUMENTOS_ESPERADOS=2
 diretorioChamada=$1
 nomeScript=$2
+E_BADARGS=85
 # Verificando se o o Cliente e o Projeto foram enviados
 if [ $# -ne $ARGUMENTOS_ESPERADOS ]
 then
@@ -259,11 +260,12 @@ then
         rsync -avzh --exclude='*/.git'  -e "ssh -p 667" $CAMINHO_LOCAL_TEMPORARIO/* root@casanovadigital.com.br:$DIRETORIO_DESTINO_REMOTO
     fi
 else 
+cp $CAMINHO_WEBAPP_PROJETO/src/main/resources/deploy/* $CAMINHO_LOCAL_TEMPORARIO/ -f
 cp $CAMINHO_WEBAPP_TARGET/$ARQUIVO_WEBAAP $CAMINHO_LOCAL_TEMPORARIO/$NOME_ARQUIVO_WAR_DEPLOY -f
 cd $CAMINHO_RELEASE/$NOME_GRUPO_PROJETO
 
 alerta "O sistema irá enviar o DockerFile para o servidor de distribuição"
-echo "enviando arquivos DockerFile para publicação no serividor"
+echo "enviando arquivos DockerFile para publicação no serividor em /opt/traefik/configServidor/jenkins/workspace/javee_files/$NOME_GRUPO_PROJETO/"
 rsync -avzh --exclude='*/.git'  -e "ssh -p 667" $CAMINHO_LOCAL_TEMPORARIO/*   root@casanovadigital.com.br:/opt/traefik/configServidor/jenkins/workspace/javee_files/$NOME_GRUPO_PROJETO/
 fi
 alerta "***************************ATENÇÃO ********************************
