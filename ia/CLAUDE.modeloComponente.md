@@ -1,4 +1,4 @@
-# Caramelo Code — composite component JSF
+# Caramelo Code — composite component / formulário JSF
 
 Você edita SOMENTE estes dois arquivos:
 - XHTML: {{XHTML}}
@@ -7,8 +7,11 @@ Você edita SOMENTE estes dois arquivos:
 Não crie, edite ou apague nenhum outro arquivo.
 Para LER qualquer arquivo além destes dois, PEÇA PERMISSÃO antes.
 
+## Tipo deste arquivo
+{{TIPO_CONTEXTO}}
+
 ## Stack
-JSF 2.3 (composite components) · PrimeFaces 13.0.21 · Java 1.8 · Weld 2.4.8.Final · Servlet 3.1.0.
+JSF 2.3 · PrimeFaces 13.0.21 · Java 1.8 · Weld 2.4.8.Final · Servlet 3.1.0.
 Use apenas recursos compatíveis com Java 8. Não adicione dependências novas além das já carregadas.
 
 Bibliotecas de terceiros já carregadas no projeto (pode usar sem instalar nada):
@@ -21,9 +24,15 @@ Bibliotecas de terceiros já carregadas no projeto (pode usar sem instalar nada)
 - jQuery (via PrimeFaces) + BlockUI — jQuery disponível; BlockUI bloqueia a UI durante requisições ajax.
 
 ## Projeto e onde ler os recursos
-Projeto JSF com estrutura Maven (código em src/main/...). Regras de caminho:
-- Tudo sob SBComp/ tem caminho FIXO: {{SBCOMP}}/ — inclui o CRC, as libs empacotadas e QUALQUER componente ou recurso SBComp que este componente importe. Leia-os sempre nesse caminho fixo, nunca no resources do projeto atual.
-- O componente atual e os demais recursos do projeto (ex.: library "css", "js") são RELATIVOS ao resources do projeto atual: {{RESOURCES}}/
+Projeto JSF com estrutura Maven (código em src/main/...).
+
+Um recurso declarado como `<h:outputStylesheet name="N" library="L" />` (idem `<h:outputScript>`) fica fisicamente em `resources/L/N`. Para localizar o arquivo:
+- library="SBComp" → caminho FIXO: {{SBCOMP}}/N
+    ex.: name="recursos/css/CRCLayoutResponsivo.css" → {{SBCOMP}}/recursos/css/CRCLayoutResponsivo.css
+- qualquer outra library (ex.: "css", "js") → no projeto atual: {{RESOURCES}}/L/N
+    ex.: name="solicitacao/x.css" library="css" → {{RESOURCES}}/css/solicitacao/x.css
+
+O resources do projeto atual é {{RESOURCES}}/ (deduzido do caminho dos arquivos desta tarefa e do PWD). Tudo sob SBComp/ (CRC, libs empacotadas e qualquer componente/recurso SBComp que este arquivo importe) é SEMPRE lido no caminho fixo {{SBCOMP}}/, nunca no resources do projeto atual.
 Para ler qualquer um desses recursos, peça permissão antes.
 
 ## Posicionamento / layout responsivo
@@ -41,5 +50,5 @@ Arquivos extras fornecidos para esta tarefa, como referência. Consulte apenas s
 {{OUTROS_ARQUIVOS}}
 
 ## Regras
-- Estilo próprio do componente vai em {{CSS}}; sem estilo inline para layout.
+- Estilo próprio do arquivo vai em {{CSS}}; sem estilo inline para layout.
 - Siga o padrão de nomenclatura já existente no XHTML.

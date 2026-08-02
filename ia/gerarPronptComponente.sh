@@ -1,31 +1,25 @@
 #!/usr/bin/env bash
 #
-# Caramelo Code — monta o system prompt do composite component e chama o Claude Code.
-# - Os 2 primeiros arquivos são o par do componente (.xhtml e .css), em qualquer ordem,
-#   no mesmo diretório.
-# - Depois deles, arquivos EXTRAS opcionais (relativos ao diretório atual ou absolutos),
-#   que podem estar em qualquer lugar. São listados no modelo e têm suas pastas liberadas.
-# - resources do PROJETO ATUAL: detectado do PWD (primeiro "resources").
+# Caramelo Code — monta o system prompt do composite component / formulário e chama o Claude Code.
+# - Os 2 primeiros arquivos são o par principal (.xhtml e .css), em qualquer ordem.
+#   Podem estar em pastas DIFERENTES (ex.: formulário em site/ e o css em resources/css/).
+# - Depois deles, arquivos EXTRAS opcionais (relativos ao diretório atual ou absolutos).
+#   São listados no modelo e têm suas pastas liberadas.
+# - resources do PROJETO ATUAL: primeiro "resources" do PWD; se o PWD não tiver
+#   (ex.: formulários na pasta site), usa o "resources" achado no caminho dos arquivos.
 # - SBComp (framework: CRC, componentes, libs): caminho FIXO do carameloCode.
 #
 # Uso:
 #   gerarPronptComponente.sh <xhtml> <css> [extra1 extra2 ...] [-- <args do claude>]
+#
+# Ex. (formulário, css em outra pasta):
+#   gerarPronptComponente.sh solicitacao_atualizar_arquivo.xhtml ../../../resources/css/solicitacao/solicitacao_atualizar_arquivo.css
 #
 set -euo pipefail
 
 # --- caminhos fixos -----------------------------------------------------------
 MODELO="/home/superBits/superBitsDevOps/devOpsProjeto/ia/CLAUDE.modeloComponente.md"
 SBCOMP="/home/superBits/projetos/carameloCode/source/projeto/webApp/src/main/webapp/resources/SBComp"
-
-# --- resources do PROJETO ATUAL (primeiro "resources" do PWD) -----------------
-case "$PWD" in
-  */resources/*) RESOURCES_DIR="${PWD%%/resources/*}/resources" ;;
-  */resources)   RESOURCES_DIR="$PWD" ;;
-  *) echo "Não encontrei 'resources' no caminho atual:" >&2
-     echo "  $PWD" >&2
-     echo "Rode de dentro do projeto (em resources ou abaixo dele)." >&2
-     exit 1 ;;
-esac
 
 # --- separa arquivos (até "--") dos args extras do claude ---------------------
 FILES=()
@@ -61,6 +55,40 @@ to_abs() {
 }
 XHTML="$(to_abs "$XHTML_IN")"
 CSS="$(to_abs "$CSS_IN")"
+
+# --- resources do PROJETO ATUAL: PWD -> XHTML -> CSS (primeiro que tiver) ------
+resources_de() {
+  case "$1" in
+    */resources/*) printf '%s' "${1%%/resources/*}/resources" ;;
+    */resources)   printf '%s' "$1" ;;
+    *) return 1 ;;
+  esac
+}
+RESOURCES_DIR=""
+for p in "$PWD" "$XHTML" "$CSS"; do
+  if RESOURCES_DIR="$(resources_de "$p")"; then break; fi
+done
+[[ -n "$RESOURCES_DIR" ]] || {
+  echo "Não encontrei 'resources' no diretório atual nem nos caminhos informados:" >&2
+  echo "  PWD:   $PWD" >&2
+  echo "  XHTML: $XHTML" >&2
+  echo "  CSS:   $CSS" >&2
+  echo "Informe um .css cujo caminho passe por 'resources' (ex.: .../resources/css/...)." >&2
+  exit 1
+}
+
+# --- tipo: xhtml sob resources/ = composite component; senão = formulário -----
+case "$XHTML" in
+  */resources/*)
+    TIPO_BLOCK="Você está editando um COMPOSITE COMPONENT JSF (o .xhtml está sob resources/).
+Estruture com <composite:interface> (declara os atributos/params do componente) e <composite:implementation> (o markup)."
+    ;;
+  *)
+    TIPO_BLOCK="Você está editando um XHTML de FORMULÁRIO que usa template (o .xhtml está fora de resources, ex.: em site/).
+Ele deve usar <ui:composition template=\"...\"> e preencher os <ui:define> definidos pelo template.
+O template usado está no atributo 'template' deste próprio .xhtml; se precisar entendê-lo, peça permissão para lê-lo."
+    ;;
+esac
 
 # --- validação ----------------------------------------------------------------
 [[ -f "$MODELO" ]] || { echo "Modelo não encontrado: $MODELO" >&2; exit 1; }
@@ -105,12 +133,14 @@ BASE="$(
     -e "s|{{SBCOMP}}|${SBCOMP}|g" \
     "$MODELO"
 )"
-# 2) lista multilinha via awk (evita problemas de escape do sed)
+# 2) blocos multilinha via awk (evita problemas de escape do sed)
 PROMPT="$(
-  printf '%s' "$BASE" | OUTROS_BLOCK="$OUTROS_BLOCK" awk '
-    index($0, "{{OUTROS_ARQUIVOS}}") { print ENVIRON["OUTROS_BLOCK"]; next }
-    { print }
-  '
+  printf '%s' "$BASE" \
+    | OUTROS_BLOCK="$OUTROS_BLOCK" TIPO_BLOCK="$TIPO_BLOCK" awk '
+        index($0, "{{OUTROS_ARQUIVOS}}") { print ENVIRON["OUTROS_BLOCK"]; next }
+        index($0, "{{TIPO_CONTEXTO}}")   { print ENVIRON["TIPO_BLOCK"];   next }
+        { print }
+      '
 )"
 
 # --- chama o Claude Code ------------------------------------------------------
