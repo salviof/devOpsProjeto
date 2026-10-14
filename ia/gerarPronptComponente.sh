@@ -18,7 +18,8 @@
 set -euo pipefail
 
 # --- caminhos fixos -----------------------------------------------------------
-MODELO="/home/superBits/superBitsDevOps/devOpsProjeto/ia/CLAUDE.modeloComponente.md"
+MODELO_COMPONENTE="/home/superBits/superBitsDevOps/devOpsProjeto/ia/CLAUDE.modeloComponente.md"
+MODELO_FORMULARIO="/home/superBits/superBitsDevOps/devOpsProjeto/ia/CLAUDE.modeloFormulario.md"
 SBCOMP="/home/superBits/projetos/carameloCode/source/projeto/webApp/src/main/webapp/resources/SBComp"
 
 # --- separa arquivos (até "--") dos args extras do claude ---------------------
@@ -80,10 +81,12 @@ done
 # --- tipo: xhtml sob resources/ = composite component; senão = formulário -----
 case "$XHTML" in
   */resources/*)
+    MODELO="$MODELO_COMPONENTE"
     TIPO_BLOCK="Você está editando um COMPOSITE COMPONENT JSF (o .xhtml está sob resources/).
 Estruture com <composite:interface> (declara os atributos/params do componente) e <composite:implementation> (o markup)."
     ;;
   *)
+    MODELO="$MODELO_FORMULARIO"
     TIPO_BLOCK="Você está editando um XHTML de FORMULÁRIO que usa template (o .xhtml está fora de resources, ex.: em site/).
 Ele deve usar <ui:composition template=\"...\"> e preencher os <ui:define> definidos pelo template.
 O template usado está no atributo 'template' deste próprio .xhtml; se precisar entendê-lo, peça permissão para lê-lo."

@@ -1,11 +1,15 @@
 # Caramelo Code — composite component / formulário JSF
 
-Você edita SOMENTE estes dois arquivos:
+Você edita SOMENTE estes dois arquivos, não precisar pedir autorização para edita-los
 - XHTML: {{XHTML}}
 - CSS:   {{CSS}}
 
+Certifique sempre que o conteúdo após possiveis importações de javascript e css, esteja entre <h:panelGroup > com uma classe que represente o componente.
+se não houver uma classe, crie com esta nomeclatura: crc-comp-nomeComponente
+
+
 Não crie, edite ou apague nenhum outro arquivo.
-Para LER qualquer arquivo além destes dois, PEÇA PERMISSÃO antes.
+Para LER qualquer arquivo além destes dois e os opcionais: ( {{OUTROS_ARQUIVOS}} )  PEÇA PERMISSÃO antes.
 
 ## Tipo deste arquivo
 {{TIPO_CONTEXTO}}
@@ -17,11 +21,27 @@ Use apenas recursos compatíveis com Java 8. Não adicione dependências novas a
 Bibliotecas de terceiros já carregadas no projeto (pode usar sem instalar nada):
 - PrimeFaces 13 — componentes UI de JSF (biblioteca principal de componentes).
 - PrimeFlex — utilitários CSS de grid/flexbox (complementa o PrimeFaces).
-- Bootstrap — framework CSS de grid, utilitários e componentes.
+- Bootstrap v5.0.2 — framework CSS de grid, utilitários e componentes.
 - W3.CSS — framework CSS leve de utilitários.
 - Animate.css — classes de animação CSS prontas.
 - Font Awesome 6.5 — ícones; com v4-shims, a sintaxe antiga (fa fa-*) também funciona.
 - jQuery (via PrimeFaces) + BlockUI — jQuery disponível; BlockUI bloqueia a UI durante requisições ajax.
+- Ao fazer comentários utilize esta sintaxe: <!-- Exemplo -->
+- h:panelGroup não tem atributo title
+- o arquivo css, pode cuidar de 1 ou mais componentes, para evitar conflito com nomes de classe siga essas regras:
+
+## Classes CSS em componentes JSF
+
+- Envolva o componente em `h:panelGroup` com `styleClass` = classe raiz.
+  - `layout="block"` (div): conteúdo de bloco (tabela, form, card). Padrão na dúvida.
+  - sem `layout` (span): uso inline (badge, ícone, rótulo).
+- Classe raiz: `crc-` + nome do `.xhtml` em kebab-case. Ex.: `dataTable.xhtml` → `crc-data-table`.
+- Classes internas (BEM), sempre prefixadas pela raiz:
+  - elemento: `crc-data-table__header`
+  - variação/estado: `crc-data-table--compacta`, `crc-data-table__row--ativa`
+- Proibido: classes genéricas soltas (`.header`, `.ativo`, `.btn`) e seletores de tag no topo (`div`, `table`).
+- Um CSS pode ter vários componentes; separe por `/* === crc-xxx === */`.
+- Override de PrimeFaces sempre escopado: `.crc-data-table .ui-datatable-header`, nunca `.ui-datatable-header`.
 
 ## Projeto e onde ler os recursos
 Projeto JSF com estrutura Maven (código em src/main/...).
@@ -50,5 +70,5 @@ Arquivos extras fornecidos para esta tarefa, como referência. Consulte apenas s
 {{OUTROS_ARQUIVOS}}
 
 ## Regras
-- Estilo próprio do arquivo vai em {{CSS}}; sem estilo inline para layout.
+- Estilo próprio do arquivo vai em {{CSS}}; sem estilo inline para layout, você tem permissão para alterar esse arquivo sem pedir altorização.
 - Siga o padrão de nomenclatura já existente no XHTML.
